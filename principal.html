@@ -1,0 +1,136 @@
+<html>
+<head>
+    <title>Principal</title>
+    <style>
+        /* Estilos Generales */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #0B132B;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Encabezado */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #5BC0BE;
+        }
+
+        header p {
+            font-size: 1.5rem;
+            color: #b3b3cc;
+        }
+
+        /* Rejilla de Opciones */
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .card {
+            background: #1C2541;
+            border-radius: 12px;
+            padding: 25px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+            background: #34344d;
+        }
+
+        .card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .card p {
+            font-size: 0.8rem;
+            color: #a0a0c0;
+        }
+
+        /* Pie de página */
+        footer {
+            margin-top: 50px;
+            color: #7a7a9a;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Segundo semestre</h1>
+        <p>que esto ayude con fe</p>
+    </header>
+
+    <main class="container">
+        <!-- Opción 1 -->
+        <a href="card1.html" class="card">
+            <div class="icon">
+                <img src="imagenes/icono1.png" alt="Icono 1" style="width: 70px; height: auto;">
+            </div>
+            <h3>Información de los cursos</h3>
+            <p>Conoce los horarios de los cursos y profesores confirmados.</p>
+        </a>
+
+        <!-- Opción 2 -->
+        <a href="card2.html" class="card">
+            <div class="icon">
+                <img src="imagenes/icono2.png" alt="Icono 2" style="width: 70px; height: auto;">
+            </div>
+            <h3>Creación y visualización de horarios</h3>
+            <p>Crea un horario para visualizar tu combinación de cursos</p>
+        </a>
+
+        <!-- Opción 3 -->
+        <a href="card3.html" class="card">
+            <div class="icon">
+                <img src="imagenes/icono3.png" alt="Icono 3" style="width: 70px; height: auto;">
+            </div>
+            <h3>Visualiza tus notas</h3>
+            <p>Calcula tus notas según el silabo de cada curso.</p>
+        </a>
+    </main>
+
+    <footer>
+        Inserte una descripción que refleje a la promoción xd
+    </footer>
+
+</body>
+</html>

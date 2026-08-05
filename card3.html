@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Notas por Unidades</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #0B132B;
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .btn-back {
+            max-width: 1050px;
+            margin: 0 auto 20px auto;
+        }
+
+        .btn-back a {
+            color: #5BC0BE;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .btn-back a:hover {
+            color: #70e4e1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: #5BC0BE;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #b3b3cc;
+            font-size: 1rem;
+        }
+
+        .main-container {
+            max-width: 1050px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 850px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: #1C2541;
+            border-radius: 12px;
+            padding: 22px;
+            border: 1px solid #3a506b;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            color: #5BC0BE;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #3a506b;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .unit-badge {
+            font-size: 0.75rem;
+            background: #3a506b;
+            color: #ffffff;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #d0d0e6;
+        }
+
+        .form-group select, .form-group input {
+            width: 100%;
+            background: #0B132B;
+            color: #ffffff;
+            border: 1px solid #3a506b;
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group select:focus, .form-group input:focus {
+            border-color: #5BC0BE;
+        }
+
+        .form-group input:disabled, .form-group select:disabled {
+            background: #161e36;
+            color: #718096;
+            border-color: #2a3a50;
+            cursor: not-allowed;
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .unit-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background: #111b38;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        /* Resultados y Métricas */
+        .sticky-card {
+            position: sticky;
+            top: 20px;
+        }
+
+        .result-box {
+            background: #0B132B;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #3a506b;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .result-score {
+            font-size: 2.8rem;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #ffffff;
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .status-pass {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            border: 1px solid #22c55e;
+        }
+
+        .status-fail {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid #ef4444;
+        }
+
+        .target-box {
+            margin-top: 15px;
+            background: #253259;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #5BC0BE;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .target-list {
+            margin-top: 8px;
+            font-size: 1rem;
+            color: #5BC0BE;
+        }
+
+        .target-list div {
+            margin-bottom: 4px;
+        }
+
+        .warning-box {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .info-note {
+            font-size: 0.8rem;
+            color: #8b9bb4;
+            margin-top: 15px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="btn-back">
+        <a href="principal.html">← Volver a la Pagina Principal</a>
+    </div>
+
+    <header>
+        <h1>Calculadora de Notas</h1>
+        <p>3 Unidades de Evaluación • Ponderación configurable o libre</p>
+    </header>
+
+    <div class="main-container">
+
+        <!-- CURSOS -->
+        <div>
+            <!-- Selección de Curso -->
+            <div class="card">
+                <h2>Selección de Asignatura</h2>
+                <div class="row-2">
+                    <div class="form-group">
+                        <label for="courseSelect">Curso</label>
+                        <select id="courseSelect" onchange="onCourseChange()">
+                            <option value="custom">Personalizado (Ingreso Libre)</option>
+                            <option value="taller">Taller de diseño arquitectónico 2</option>
+                            <option value="representación">Representación arquitectónica 2</option>
+                            <option value="historia">Teoría e Historia de la arquitectura 1</option>
+                            <option value="Geometría">Geometría descriptiva</option>
+                            <option value="Realidad">Realidad nacional</option>
+                            <option value="Lingüística">Lingüística, comprensión y redacción académica</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sectionSelect">Sección</label>
+                        <select id="sectionSelect" onchange="calculateGrade()">
+                            <option value="">- Seleccione -</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UNIDAD 1 -->
+            <div class="card">
+                <h2>Unidad 1 <span class="unit-badge" id="u1Badge">0% del Curso</span></h2>
+                <div class="unit-grid">
+                    <div class="form-group">
+                        <label>% Continua 1</label>
+                        <input type="number" id="u1c_w" min="0" max="100" placeholder="%" oninput="calculateGrade()">
+                    </div>
+                    <div class="form-group">
+                        <label>Nota Continua 1</label>
+                        <input type="number" id="u1c_g" min="0" max="20" step="0.5" placeholder="0-20" oninput="calculateGrade()">
+                    </div>
+                </div>
+                <div class="unit-grid">
+                    <div class="form-group">
+                        <label>% Examen 1</label>
+                        <input type="number" id="u1e_w" min="0" max="100" placeholder="%" oninput="calculateGrade()">
+                    </div>
+                    <div class="form-group">
+                        <label>Nota Examen 1</label>
+                        <input type="number" id="u1e_g" min="0" max="20" step="0.5" placeholder="0-20" oninput="calculateGrade()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- UNIDAD 2 -->
+            <div class="card">
+                <h2>Unidad 2 <span class="unit-badge" id="u2Badge">0% del Curso</span></h2>
+                <div class="unit-grid">
+                    <div class="form-group">
+                        <label>% Continua 2</label>
+                        <input type="number" id="u2c_w" min="0" max="100" placeholder="%" oninput="calculateGrade()">
+                    </div>
+                    <div class="form-group">
+                        <label>Nota Continua 2</label>
+                        <input type="number" id="u2c_g" min="0" max="20" step="0.5" placeholder="0-20" oninput="calculateGrade()">
+                    </div>
+                </div>
+                <div class="unit-grid">
+                    <div class="form-group">
+                        <label>% Examen 2</label>
+                        <input type="number" id="u2e_w" min="0" max="100" placeholder="%" oninput="calculateGrade()">
+                    </div>
+                    <div class="form-group">
+                        <label>Nota Examen 2</label>
+                        <input type="number" id="u2e_g" min="0" max="20" step="0.5" placeholder="0-20" oninput="calculateGrade()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- UNIDAD 3 -->
+            <div class="card">
+                <h2>Unidad 3 <span class="unit-badge" id="u3Badge">0% del Curso</span></h2>
+                <div class="unit-grid">
+                    <div class="form-group">
+                        <label>% Continua 3</label>
+                        <input type="number" id="u3c_w" min="0" max="100" placeholder="%" oninput="calculateGrade()">
+                    </div>
+                    <div class="form-group">
+                        <label>Nota Continua 3</label>
+                        <input type="number" id="u3c_g" min="0" max="20" step="0.5" placeholder="Opcional" oninput="calculateGrade()">
+                    </div>
+                </div>
+                <div class="unit-grid">
+                    <div class="form-group">
+                        <label>% Examen 3</label>
+                        <input type="number" id="u3e_w" min="0" max="100" placeholder="%" oninput="calculateGrade()">
+                    </div>
+                    <div class="form-group">
+                        <label>Nota Examen 3</label>
+                        <input type="number" id="u3e_g" min="0" max="20" step="0.5" placeholder="Opcional" oninput="calculateGrade()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: RESULTADOS -->
+        <div>
+            <div class="card sticky-card">
+                <h2>Resumen Académico</h2>
+
+                <div class="result-box">
+                    <div style="font-size: 0.85rem; color: #a0a0c0;">Promedio Final Ponderado</div>
+                    <div id="finalScore" class="result-score">--</div>
+                    <div id="statusPill" class="status-pill status-fail" style="display: none;">Pendiente</div>
+                </div>
+
+                <div id="warningContainer" style="display: none;"></div>
+
+                <div class="target-box" id="targetBox">
+                    Para aprobar el curso con <strong>11</strong> (redondeo automático desde <strong>10.50</strong>):
+                    <div id="targetText" class="target-list">
+                        Ingresa las notas de la Unidad 1 para comenzar
+                    </div>
+                </div>
+
+                <p class="info-note">
+                    <strong>Regla de Redondeo:</strong> Un promedio acumulado de 10.50 o superior sube automáticamente a 11 en el acta final.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Configuración de cursos con sus secciones únicas y ponderaciones correspondientes
+        const courseConfig = {
+            taller: {
+                "A": { u1c: 15, u1e: 15, u2c: 15, u2e: 20, u3c: 15, u3e: 20 },
+                "B": { u1c: 10, u1e: 20, u2c: 10, u2e: 25, u3c: 10, u3e: 25 },
+                "C": { u1c: 20, u1e: 10, u2c: 20, u2e: 15, u3c: 20, u3e: 15 },
+                "D": { u1c: 15, u1e: 15, u2c: 20, u2e: 20, u3c: 15, u3e: 15 }
+            },
+            representación: {
+                "A": { u1c: 10, u1e: 20, u2c: 10, u2e: 25, u3c: 10, u3e: 25 },
+                "B": { u1c: 15, u1e: 15, u2c: 15, u2e: 20, u3c: 15, u3e: 20 },
+                "C": { u1c: 10, u1e: 20, u2c: 15, u2e: 20, u3c: 15, u3e: 20 } 
+            },
+            historia: {
+                "A": { u1c: 20, u1e: 10, u2c: 20, u2e: 15, u3c: 20, u3e: 15 },
+                "B": { u1c: 15, u1e: 15, u2c: 15, u2e: 20, u3c: 15, u3e: 20 } 
+            },
+            Geometría: {
+                "A": { u1c: 15, u1e: 15, u2c: 20, u2e: 20, u3c: 15, u3e: 15 },
+                "B": { u1c: 20, u1e: 10, u2c: 20, u2e: 15, u3c: 20, u3e: 15 },
+                "C": { u1c: 15, u1e: 15, u2c: 15, u2e: 20, u3c: 15, u3e: 20 },
+                "D": { u1c: 10, u1e: 20, u2c: 10, u2e: 25, u3c: 10, u3e: 25 },
+                "E": { u1c: 12, u1e: 18, u2c: 15, u2e: 20, u3c: 15, u3e: 20 } 
+            },
+            Realidad: {
+                "A": { u1c: 15, u1e: 15, u2c: 20, u2e: 20, u3c: 15, u3e: 15 } 
+            },
+            Lingüística: {
+                "A": { u1c: 15, u1e: 15, u2c: 20, u2e: 20, u3c: 15, u3e: 15 },
+                "B": { u1c: 20, u1e: 10, u2c: 20, u2e: 15, u3c: 20, u3e: 15 },
+                "C": { u1c: 15, u1e: 15, u2c: 15, u2e: 20, u3c: 15, u3e: 20 }
+            }
+        };
+
+        const weightInputs = ["u1c_w", "u1e_w", "u2c_w", "u2e_w", "u3c_w", "u3e_w"];
+        const gradeInputs = ["u1c_g", "u1e_g", "u2c_g", "u2e_g", "u3c_g", "u3e_g"];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            onCourseChange();
+            setupEnterNavigation();
+        });
+
+        // Configuración de navegación con Enter
+        function setupEnterNavigation() {
+            const getNavigationOrder = () => {
+                const course = document.getElementById("courseSelect").value;
+                if (course !== "custom") {
+                    return gradeInputs;
+                }
+                return [...weightInputs, ...gradeInputs];
+            };
+
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    const navOrder = getNavigationOrder();
+                    const activeElementId = document.activeElement ? document.activeElement.id : null;
+                    const currentIndex = navOrder.indexOf(activeElementId);
+
+                    if (currentIndex !== -1) {
+                        e.preventDefault();
+                        if (currentIndex + 1 < navOrder.length) {
+                            const nextElement = document.getElementById(navOrder[currentIndex + 1]);
+                            if (nextElement) {
+                                nextElement.focus();
+                                nextElement.select();
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function setWeightsDisabled(isDisabled) {
+            weightInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.disabled = isDisabled;
+            });
+        }
+
+        // Ejecutada cada vez que cambia el selector de Curso
+        function onCourseChange() {
+            const course = document.getElementById("courseSelect").value;
+            const sectionSelect = document.getElementById("sectionSelect");
+
+            // Limpiar opciones anteriores de secciones
+            sectionSelect.innerHTML = "";
+
+            if (course === "custom") {
+                setWeightsDisabled(false);
+                sectionSelect.disabled = true;
+
+                const opt = document.createElement("option");
+                opt.value = "";
+                opt.textContent = "N/A";
+                sectionSelect.appendChild(opt);
+            } else {
+                setWeightsDisabled(true);
+                sectionSelect.disabled = false;
+
+                // Cargar dinámicamente las secciones disponibles para este curso
+                const sections = Object.keys(courseConfig[course] || {});
+                sections.forEach(sec => {
+                    const opt = document.createElement("option");
+                    opt.value = sec;
+                    opt.textContent = ` ${sec}`;
+                    sectionSelect.appendChild(opt);
+                });
+            }
+
+            // Actualizar la ponderación y recalcular
+            updateWeightsFromSelection();
+            calculateGrade();
+        }
+
+        // Aplica las ponderaciones en base a la sección activa
+        function updateWeightsFromSelection() {
+            const course = document.getElementById("courseSelect").value;
+            const section = document.getElementById("sectionSelect").value;
+
+            if (course !== "custom" && courseConfig[course]?.[section]) {
+                const config = courseConfig[course][section];
+                document.getElementById("u1c_w").value = config.u1c;
+                document.getElementById("u1e_w").value = config.u1e;
+                document.getElementById("u2c_w").value = config.u2c;
+                document.getElementById("u2e_w").value = config.u2e;
+                document.getElementById("u3c_w").value = config.u3c;
+                document.getElementById("u3e_w").value = config.u3e;
+            }
+        }
+
+        function calculateGrade() {
+            // Validar que las notas no superen el tope máximo de 20
+            gradeInputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input && parseFloat(input.value) > 20) {
+                    input.value = 20;
+                }
+            });
+
+            // Asegurar que las ponderaciones estén alineadas con la sección seleccionada
+            const course = document.getElementById("courseSelect").value;
+            if (course !== "custom") {
+                updateWeightsFromSelection();
+            }
+
+            const weights = weightInputs.map(id => parseFloat(document.getElementById(id).value) || 0);
+            const grades = gradeInputs.map(id => parseFloat(document.getElementById(id).value));
+
+            // Actualizar insignias con el % total por Unidad
+            document.getElementById("u1Badge").textContent = `${weights[0] + weights[1]}% del Curso`;
+            document.getElementById("u2Badge").textContent = `${weights[2] + weights[3]}% del Curso`;
+            document.getElementById("u3Badge").textContent = `${weights[4] + weights[5]}% del Curso`;
+
+            const scoreDisplay = document.getElementById("finalScore");
+            const statusPill = document.getElementById("statusPill");
+            const targetText = document.getElementById("targetText");
+            const targetBox = document.getElementById("targetBox");
+            const warningContainer = document.getElementById("warningContainer");
+
+            // Validar la suma de porcentajes
+            const totalWeight = weights.reduce((acc, curr) => acc + curr, 0);
+
+            if (totalWeight !== 100) {
+                warningContainer.style.display = "block";
+                warningContainer.innerHTML = `
+                    <div class="warning-box">
+                        ⚠️ <strong>Atención con la ponderación:</strong> La suma total de los porcentajes es <strong>${totalWeight}%</strong>. Debe sumar exactamente <strong>100%</strong> para realizar los cálculos correctamente.
+                    </div>
+                `;
+                scoreDisplay.textContent = "--";
+                statusPill.style.display = "none";
+                targetBox.style.display = "none";
+                return;
+            } else {
+                warningContainer.style.display = "none";
+                targetBox.style.display = "block";
+            }
+
+            // Comprobar estado de completado por Unidad
+            const u1Complete = !isNaN(grades[0]) && !isNaN(grades[1]);
+            const u2Complete = !isNaN(grades[2]) && !isNaN(grades[3]);
+            const u3Complete = !isNaN(grades[4]) && !isNaN(grades[5]);
+
+            // Puntos acumulados por unidad
+            let pointsU1 = u1Complete ? ((grades[0] * weights[0]) + (grades[1] * weights[1])) / 100 : 0;
+            let pointsU2 = u2Complete ? ((grades[2] * weights[2]) + (grades[3] * weights[3])) / 100 : 0;
+            let pointsU3 = u3Complete ? ((grades[4] * weights[4]) + (grades[5] * weights[5])) / 100 : 0;
+
+            const targetPoints = 10.50;
+
+            // 1. Si NO está completa la Unidad 1
+            if (!u1Complete) {
+                targetText.innerHTML = `<span style="color: #a0a0c0; font-size: 0.9rem;">Ingresa la <strong>Nota Continua 1</strong> y el <strong>Examen 1</strong> para habilitar los cálculos.</span>`;
+                scoreDisplay.textContent = "--";
+                statusPill.style.display = "none";
+                return;
+            }
+
+            let totalAccumulated = pointsU1;
+
+            // 2. Si Unidad 1 está COMPLETA pero NO la Unidad 2
+            if (u1Complete && !u2Complete) {
+                const pointsNeeded = targetPoints - pointsU1;
+
+                scoreDisplay.textContent = totalAccumulated.toFixed(2) + " pts";
+                statusPill.style.display = "inline-block";
+                statusPill.textContent = "Unidad 1 Registrada";
+                statusPill.className = "status-pill status-fail";
+                statusPill.style.borderColor = "#5BC0BE";
+                statusPill.style.color = "#5BC0BE";
+                statusPill.style.background = "rgba(91, 192, 190, 0.1)";
+
+                if (pointsNeeded <= 0) {
+                    targetText.innerHTML = `¡Ya estás Aprobado con tu Unidad 1! :D (Llevas ${pointsU1.toFixed(2)} pts)`;
+                } else {
+                    const remainingWeight = weights[2] + weights[3] + weights[4] + weights[5];
+                    let minNote = (pointsNeeded * 100) / remainingWeight;
+
+                    if (minNote > 20) {
+                        targetText.innerHTML = `<span style="color: #ef4444;">Inalcanzable :c (Necesitarías sacar más de 20 en las siguientes unidades).</span>`;
+                    } else {
+                        targetText.innerHTML = `
+                            <strong>Para aprobar debes sacar mínimo:</strong>
+                            <div style="margin-top: 8px;">
+                                <strong>Unidad 2:</strong>
+                                <div>• Tienes que sacar <strong>${minNote.toFixed(2)}</strong> en Continua 2</div>
+                                <div>• Tienes que sacar <strong>${minNote.toFixed(2)}</strong> en Examen 2</div>
+                            </div>
+                            <div style="margin-top: 8px;">
+                                <strong>Unidad 3:</strong>
+                                <div>• Tienes que sacar <strong>${minNote.toFixed(2)}</strong> en Continua 3</div>
+                                <div>• Tienes que sacar <strong>${minNote.toFixed(2)}</strong> en Examen 3</div>
+                            </div>
+                        `;
+                    }
+                }
+                return;
+            }
+
+            totalAccumulated = pointsU1 + pointsU2;
+
+            // 3. Si Unidad 1 y 2 están COMPLETAS pero NO la Unidad 3
+            if (u1Complete && u2Complete && !u3Complete) {
+                const pointsNeeded = targetPoints - totalAccumulated;
+                const u3TotalWeight = weights[4] + weights[5];
+
+                scoreDisplay.textContent = totalAccumulated.toFixed(2) + " pts";
+                statusPill.style.display = "inline-block";
+                statusPill.textContent = "Unidad 1 y 2 Registradas";
+                statusPill.className = "status-pill status-fail";
+                statusPill.style.borderColor = "#5BC0BE";
+                statusPill.style.color = "#5BC0BE";
+                statusPill.style.background = "rgba(91, 192, 190, 0.1)";
+
+                if (pointsNeeded <= 0) {
+                    targetText.innerHTML = `¡Ya estás Aprobado! :D`;
+                } else {
+                    let minNote = (pointsNeeded * 100) / u3TotalWeight;
+
+                    if (minNote > 20) {
+                        targetText.innerHTML = `<span style="color: #ef4444;">Inalcanzable :c (Necesitarías sacar más de 20 en la Unidad 3).</span>`;
+                    } else {
+                        targetText.innerHTML = `
+                            <strong>Para aprobar debes sacar mínimo:</strong>
+                            <div style="margin-top: 8px;">
+                                <strong>Unidad 3:</strong>
+                                <div>• Tienes que sacar <strong>${minNote.toFixed(2)}</strong> en Continua 3</div>
+                                <div>• Tienes que sacar <strong>${minNote.toFixed(2)}</strong> en Examen 3</div>
+                            </div>
+                        `;
+                    }
+                }
+                return;
+            }
+
+            // 4. Si TODAS las Unidades están COMPLETAS
+            if (u1Complete && u2Complete && u3Complete) {
+                totalAccumulated = pointsU1 + pointsU2 + pointsU3;
+                const finalRounded = Math.round(totalAccumulated);
+                const isPassing = totalAccumulated >= 10.50;
+
+                scoreDisplay.textContent = totalAccumulated.toFixed(2);
+                statusPill.style.display = "inline-block";
+
+                if (isPassing) {
+                    statusPill.textContent = `APROBADO (${finalRounded})`;
+                    statusPill.className = "status-pill status-pass";
+                    targetText.innerHTML = "¡Felicidades! Has completado todas las evaluaciones y aprobado el curso.";
+                } else {
+                    statusPill.textContent = `DESAPROBADO (${finalRounded})`;
+                    statusPill.className = "status-pill status-fail";
+                    targetText.innerHTML = "Has completado todas las evaluaciones pero no se alcanzó el puntaje mínimo de 10.50.";
+                }
+            }
+        }
+    </script>
+</body>
+</html>

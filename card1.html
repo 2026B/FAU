@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información de los Cursos - Horario Interactivo</title>
+    <style>
+        /* Estilos Generales */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #0B132B;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        /* Botón de Regresar */
+        .btn-back {
+            align-self: flex-start;
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto 20px auto;
+        }
+
+        .btn-back a {
+            color: #5BC0BE;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .btn-back a:hover {
+            color: #70e4e1;
+        }
+
+        /* Encabezado */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #5BC0BE;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: #b3b3cc;
+        }
+
+        /* Pestañas para Selección de Horarios */
+        .schedule-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: #1C2541;
+            border: 2px solid #3a506b;
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 160px;
+            flex: 1;
+        }
+
+        .tab-btn span {
+            font-size: 0.75rem;
+            color: #a0a0c0;
+            margin-top: 4px;
+            font-weight: normal;
+        }
+
+        .tab-btn:hover {
+            border-color: #5BC0BE;
+            background: #253259;
+        }
+
+        .tab-btn.active {
+            background: #5BC0BE;
+            color: #0B132B;
+            border-color: #5BC0BE;
+            box-shadow: 0 4px 15px rgba(91, 192, 190, 0.3);
+        }
+
+        .tab-btn.active span {
+            color: #0B132B;
+            font-weight: 600;
+        }
+
+        /* Contenedor del Horario Interactivo */
+        .timetable-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            background: #1C2541;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #3a506b;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
+        }
+
+        .timetable-header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #3a506b;
+        }
+
+        .timetable-header-info h2 {
+            font-size: 1.4rem;
+            color: #5BC0BE;
+        }
+
+        .shift-tag {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .morning-tag {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffca28;
+            border: 1px solid #ffca28;
+        }
+
+        .afternoon-tag {
+            background: rgba(79, 172, 254, 0.2);
+            color: #4facfe;
+            border: 1px solid #4facfe;
+        }
+
+        /* Rejilla de Horario */
+        .timetable {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+            table-layout: fixed;
+            height: 100%;
+        }
+
+        .timetable tr {
+            height: 55px;
+        }
+
+        .timetable th, .timetable td {
+            border: 1px solid #3a506b;
+            text-align: center;
+            padding: 0;
+            vertical-align: middle;
+            height: 55px;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .timetable th {
+            background: #0B132B;
+            color: #5BC0BE;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 4px;
+            height: auto;
+        }
+
+        .timetable td.time-col {
+            background: #0B132B;
+            color: #a0a0c0;
+            font-weight: 600;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            padding: 8px 4px;
+        }
+
+        /* Tarjeta del Curso en la Grilla */
+        .course-slot {
+            background: #111b38;
+            border-radius: 4px;
+            padding: 8px 6px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            border-left: 5px solid #ffffff;
+            text-align: left;
+            height: 100%;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .course-slot:hover {
+            background: #1b284f;
+            transform: translateY(-1px);
+        }
+
+        .course-slot .title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 4px;
+            color: #e0e0e0;
+            word-break: break-word;
+        }
+
+        .course-slot .teacher {
+            font-size: 0.7rem;
+            color: #8a9bbd;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .empty-slot {
+            color: #3a506b;
+            font-size: 0.8rem;
+            font-style: italic;
+            display: block;
+            padding: 8px;
+        }
+
+        /* Modal de Información del Curso */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* Animaciones de Entrada (Abrir) */
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeInOverlay 0.3s ease forwards;
+        }
+
+        .modal-overlay.active .modal-content {
+            animation: modalPopIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Animaciones de Salida (Cerrar) */
+        .modal-overlay.closing {
+            display: flex;
+            animation: fadeOutOverlay 0.25s ease forwards;
+        }
+
+        .modal-overlay.closing .modal-content {
+            animation: modalPopOut 0.25s ease forwards;
+        }
+
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOutOverlay {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        @keyframes modalPopIn {
+            from {
+                opacity: 0;
+                transform: scale(0.85) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes modalPopOut {
+            from {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.85) translateY(15px);
+            }
+        }
+
+        .modal-content {
+            background: #1C2541;
+            border: 2px solid #5BC0BE;
+            border-radius: 12px;
+            padding: 25px;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #a0a0c0;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .modal-close:hover {
+            color: #ffffff;
+        }
+
+        .modal-header {
+            padding-bottom: 12px;
+            border-bottom: 1px solid #3a506b;
+            margin-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            color: #5BC0BE;
+            font-weight: bold;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 0.95rem;
+        }
+
+        .info-block {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-label {
+            color: #5BC0BE;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .teacher-box {
+            margin-top: 10px;
+            background: #0B132B;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #3a506b;
+        }
+
+        .teacher-box .info-label {
+            color: #ffca28;
+        }
+
+        .teacher-list {
+            list-style: none;
+            margin-top: 4px;
+            padding-left: 0;
+        }
+
+        .teacher-list li {
+            position: relative;
+            padding-left: 14px;
+            margin-bottom: 3px;
+            color: #ffffff;
+            font-size: 0.92rem;
+        }
+
+        .teacher-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #5BC0BE;
+        }
+
+        /* Sección del Glosario */
+        .glossary-section {
+            width: 100%;
+            max-width: 1000px;
+            background: #1C2541;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
+            border: 1px solid #3a506b;
+        }
+
+        .glossary-section h3 {
+            color: #5BC0BE;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            font-size: 0.85rem;
+            color: #b3b3cc;
+        }
+
+        .glossary-item strong {
+            color: #ffffff;
+        }
+
+        footer {
+            margin-top: 50px;
+            color: #7a7a9a;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Botón para volver al menú principal -->
+    <div class="btn-back">
+        <a href="Principal.html">← Volver al Portal Principal</a>
+    </div>
+
+    <header>
+        <h1>Información de Cursos</h1>
+        <p>Visualiza el mapa de horarios interactivo y datos de la promoción de Arquitectura</p>
+    </header>
+
+    <!-- Pestañas para Selección de Horarios -->
+    <div class="schedule-tabs">
+        <button class="tab-btn active" onclick="selectSchedule('A', this)">
+            Horario Sección A
+            <span>Mañana (07:00 - 13:10)</span>
+        </button>
+        <button class="tab-btn" onclick="selectSchedule('B', this)">
+            Horario Sección B
+            <span>Tarde (14:00 - 20:10)</span>
+        </button>
+        <button class="tab-btn" onclick="selectSchedule('C', this)">
+            Horario Sección C
+            <span>Mañana (07:00 - 13:10)</span>
+        </button>
+        <button class="tab-btn" onclick="selectSchedule('D', this)">
+            Horario Sección D
+            <span>Tarde (14:00 - 20:10)</span>
+        </button>
+    </div>
+
+    <!-- Contenedor del Horario Interactivo -->
+    <div class="timetable-wrapper">
+        <div class="timetable-header-info">
+            <h2 id="scheduleTitle">Horario Semanal - Sección A</h2>
+            <span id="shiftTag" class="shift-tag morning-tag">☀️ Turno Mañana</span>
+        </div>
+
+        <table class="timetable">
+            <colgroup>
+                <col style="width: 110px;"> <!-- Columna HORA -->
+                <col style="width: 18%;">    <!-- Lunes -->
+                <col style="width: 18%;">    <!-- Martes -->
+                <col style="width: 18%;">    <!-- Miércoles -->
+                <col style="width: 18%;">    <!-- Jueves -->
+                <col style="width: 18%;">    <!-- Viernes -->
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>Hora</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                </tr>
+            </thead>
+            <tbody id="timetableBody">
+                <!-- Generado dinámicamente por JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Glosario Informativo -->
+    <div class="glossary-section">
+        <h3>📖 Glosario de Siglas</h3>
+        <div class="glossary-grid">
+            <div class="glossary-item">
+                <strong>Sección:</strong><br>
+                • <b>DA:</b> Sección de Diseño Arquitectónico<br>
+                • <b>EA:</b> Sección de Expresión Arquitectónica<br>
+                • <b>TH:</b> Sección de Teoría e Historia<br>
+                • <b>TG:</b> Sección de Tecnología y Gestión<br>
+                • <b>UP:</b> Sección de Urbanismo y Planificación<br>
+                • <b>CG:</b> Cursos Generales<br>
+                • <b>EPI:</b> Cursos Electivos + PPP + TI
+            </div>
+            <div class="glossary-item">
+                <strong>Tipo de Curso:</strong><br>
+                • <b>D:</b> Estudios generales: Capacid. de aprendizaje<br>
+                • <b>E:</b> Estudios generales: Form. humanist. ident. y ciud.<br>
+                • <b>F:</b> Estudios específicos<br>
+                • <b>G:</b> Estudios de especialidad
+            </div>
+            <div class="glossary-item">
+                <strong>Progreso y Horas:</strong><br>
+                • <b>CG:</b> Cursos generales<br>
+                • <b>N1:</b> Conoce o Comprende | <b>N2:</b> Aplica | <b>N3:</b> Logra<br>
+                • <b>NC:</b> Nº de Créditos<br>
+                • <b>0+0:</b> Horas teóricas + Horas prácticas (HS = Horas presenciales/semana)
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Promoción de Arquitectura
+    </footer>
+
+    <!-- Ventana Modal de Detalles del Curso -->
+    <div id="courseModal" class="modal-overlay" onclick="closeModalOnOuterClick(event)">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div class="modal-header">
+                <div id="modalCourseTitle" class="modal-title">Nombre del Curso</div>
+            </div>
+            <div class="modal-body">
+                <div class="info-block">
+                    <span class="info-label">Aula:</span>
+                    <span id="modalClassroom" class="info-value">-</span>
+                </div>
+                <div class="info-block">
+                    <span class="info-label">Sección:</span>
+                    <span id="modalSec" class="info-value">-</span>
+                </div>
+                <div class="info-block">
+                    <span class="info-label">Tipo de Curso:</span>
+                    <span id="modalType" class="info-value">-</span>
+                </div>
+                <div class="info-block">
+                    <span class="info-label">Progreso:</span>
+                    <span id="modalProg" class="info-value">-</span>
+                </div>
+                <div class="info-block">
+                    <span class="info-label">Créditos:</span>
+                    <span id="modalCredits" class="info-value">-</span>
+                </div>
+                <div class="info-block">
+                    <span class="info-label">Horas:</span>
+                    <span id="modalHours" class="info-value">-</span>
+                </div>
+
+                <div class="teacher-box info-block">
+                    <span class="info-label" id="modalTeacherHeader">DOCENTES ENCARGADOS:</span>
+                    <div id="modalTeacher" class="info-value">Arq. Por Asignar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Catálogo Base de los Cursos
+        // Ahora "teachers" acepta un Array de nombres por sección o un string individual
+        const coursesData = {
+            "taller2": {
+                name: "Taller de diseño arquitectónico 2",
+                color: "#31184c",
+                sec: "DA (Diseño Arquitectónico)",
+                type: "F (Estudios Específicos)",
+                prog: "N2 (Aplica)",
+                credits: "6",
+                hours: "2 Teóricas + 8 Prácticas",
+                teachers: {
+                    "A": ["Arq. Neyra", "Arq. Valdez"],
+                    "B": ["Arq. Pérez"],
+                    "C": [],
+                    "D": []
+                }
+            },
+            "rep2": {
+                name: "Representación arquitectónica 2",
+                color: "#29612d",
+                sec: "EA (Expresión Arquitectónica)",
+                type: "F (Estudios Específicos)",
+                prog: "N1 (Conoce o Comprende)",
+                credits: "2",
+                hours: "0 Teóricas + 4 Prácticas",
+                teachers: {
+                    "A": [],
+                    "B": [],
+                    "C": [],
+                    "D": []
+                }
+            },
+            "teoria1": {
+                name: "Teoría e Historia de la arquitectura 1",
+                color: "#6d212b",
+                sec: "TH (Teoría e Historia)",
+                type: "F (Estudios Específicos)",
+                prog: "N1 (Conoce o Comprende)",
+                credits: "3",
+                hours: "2 Teóricas + 2 Prácticas",
+                teachers: {
+                    "A": [],
+                    "B": [],
+                    "C": [],
+                    "D": []
+                }
+            },
+            "geom": {
+                name: "Geometría descriptiva",
+                color: "#153657",
+                sec: "CG (Cursos Generales)",
+                type: "D (Estudios generales: Capacid. de aprendizaje)",
+                prog: "CG (Cursos generales)",
+                credits: "2",
+                hours: "0 Teóricas + 4 Prácticas",
+                teachers: {
+                    "A": [],
+                    "B": [],
+                    "C": [],
+                    "D": []
+                }
+            },
+            "realidad": {
+                name: "Realidad nacional",
+                color: "#422b16",
+                sec: "CG (Cursos Generales)",
+                type: "E (Estudios generales: Form. humanist. ident. y ciud.)",
+                prog: "CG (Cursos generales)",
+                credits: "2",
+                hours: "1 Teórica + 2 Prácticas",
+                teachers: {
+                    "A": [],
+                    "B": [],
+                    "C": [],
+                    "D": []
+                }
+            },
+            "ling": {
+                name: "Lingüística, comprensión y redacción académica",
+                color: "#9f4514",
+                sec: "CG (Cursos Generales)",
+                type: "D (Estudios generales: Capacid. de aprendizaje)",
+                prog: "CG (Cursos generales)",
+                credits: "3",
+                hours: "1 Teórica + 4 Prácticas",
+                teachers: {
+                    "A": [],
+                    "B": [],
+                    "C": [],
+                    "D": []
+                }
+            }
+        };
+
+        // Bloques de Horarios Mañana (Secciones A y C)
+        const morningBlocks = [
+            { time: "07:00 - 07:50", Mon: null,       Tue: "realidad", Wed: "ling", Thu: null,       Fri: "ling" },
+            { time: "07:50 - 08:40", Mon: null,       Tue: "realidad", Wed: "ling", Thu: null,       Fri: "ling" },
+            { time: "08:50 - 09:40", Mon: "taller2",  Tue: "realidad", Wed: "rep2", Thu: "taller2",  Fri: "ling" },
+            { time: "09:40 - 10:30", Mon: "taller2",  Tue: "teoria1",  Wed: "rep2", Thu: "taller2",  Fri: "geom" },
+            { time: "10:30 - 11:20", Mon: "taller2",  Tue: "teoria1",  Wed: "rep2", Thu: "taller2",  Fri: "geom" },
+            { time: "11:30 - 12:20", Mon: "taller2",  Tue: "teoria1",  Wed: "rep2", Thu: "taller2",  Fri: "geom" },
+            { time: "12:20 - 13:10", Mon: "taller2",  Tue: "teoria1",  Wed: null,   Thu: "taller2",  Fri: "geom" }
+        ];
+
+        // Bloques de Horarios Tarde (Secciones B y D)
+        const afternoonBlocks = [
+            { time: "14:00 - 14:50", Mon: null,       Tue: "realidad", Wed: "ling", Thu: null,       Fri: "ling" },
+            { time: "14:50 - 15:40", Mon: null,       Tue: "realidad", Wed: "ling", Thu: null,       Fri: "ling" },
+            { time: "15:50 - 16:40", Mon: "taller2",  Tue: "realidad", Wed: "ling", Thu: "taller2",  Fri: "geom" },
+            { time: "16:40 - 17:30", Mon: "taller2",  Tue: "teoria1",  Wed: "rep2", Thu: "taller2",  Fri: "geom" },
+            { time: "17:30 - 18:20", Mon: "taller2",  Tue: "teoria1",  Wed: "rep2", Thu: "taller2",  Fri: "geom" },
+            { time: "18:30 - 19:20", Mon: "taller2",  Tue: "teoria1",  Wed: "rep2", Thu: "taller2",  Fri: "geom" },
+            { time: "19:20 - 20:10", Mon: "taller2",  Tue: "teoria1",  Wed: "rep2", Thu: "taller2",  Fri: null }
+        ];
+
+        // Estructura de Secciones asignadas
+        const schedules = {
+            "A": {
+                title: "Horario Sección A (Mañana)",
+                isMorning: true,
+                blocks: morningBlocks
+            },
+            "B": {
+                title: "Horario Sección B (Tarde)",
+                isMorning: false,
+                blocks: afternoonBlocks
+            },
+            "C": {
+                title: "Horario Sección C (Mañana)",
+                isMorning: true,
+                blocks: morningBlocks
+            },
+            "D": {
+                title: "Horario Sección D (Tarde)",
+                isMorning: false,
+                blocks: afternoonBlocks
+            }
+        };
+
+        let currentGroup = "A";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            renderTimetable("A");
+        });
+
+        function selectSchedule(group, btn) {
+            currentGroup = group;
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            renderTimetable(group);
+        }
+
+        // Obtiene la lista normalizada de profesores (siempre devuelve un arreglo de strings)
+        function getTeachersArray(course, group) {
+            if (course.teachers && course.teachers[group]) {
+                const val = course.teachers[group];
+                if (Array.isArray(val)) {
+                    return val.length > 0 ? val : ["Por Asignar"];
+                }
+                return [val];
+            }
+            return ["Por Asignar"];
+        }
+
+        // Formatea la visualización en la casilla pequeña del horario
+        function formatTeachersShort(teachersList) {
+            if (teachersList.length === 1) {
+                return `👨‍🏫 ${teachersList[0]}`;
+            }
+            return `👨‍🏫 ${teachersList[0]} (+${teachersList.length - 1})`;
+        }
+
+        function renderTimetable(group) {
+            const data = schedules[group];
+            const tbody = document.getElementById("timetableBody");
+            const title = document.getElementById("scheduleTitle");
+            const tag = document.getElementById("shiftTag");
+
+            title.textContent = data.title;
+            
+            if (data.isMorning) {
+                tag.textContent = "☀️ Turno Mañana";
+                tag.className = "shift-tag morning-tag";
+            } else {
+                tag.textContent = "🌙 Turno Tarde";
+                tag.className = "shift-tag afternoon-tag";
+            }
+
+            tbody.innerHTML = "";
+
+            const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+            const blocks = data.blocks;
+            const numRows = blocks.length;
+
+            const skipCell = Array.from({ length: numRows }, () => ({}));
+
+            for (let i = 0; i < numRows; i++) {
+                const tr = document.createElement("tr");
+
+                const tdTime = document.createElement("td");
+                tdTime.className = "time-col";
+                tdTime.textContent = blocks[i].time;
+                tr.appendChild(tdTime);
+
+                days.forEach(day => {
+                    if (skipCell[i][day]) {
+                        return;
+                    }
+
+                    const courseKey = blocks[i][day];
+
+                    let rowspan = 1;
+                    while (
+                        i + rowspan < numRows &&
+                        blocks[i + rowspan][day] === courseKey
+                    ) {
+                        skipCell[i + rowspan][day] = true;
+                        rowspan++;
+                    }
+
+                    const td = document.createElement("td");
+                    if (rowspan > 1) {
+                        td.rowSpan = rowspan;
+                    }
+
+                    if (courseKey && coursesData[courseKey]) {
+                        const course = coursesData[courseKey];
+                        const teachersList = getTeachersArray(course, group);
+                        const shortTeacherText = formatTeachersShort(teachersList);
+
+                        td.innerHTML = `
+                            <div class="course-slot" style="border-left-color: ${course.color}" onclick="openModal('${courseKey}')">
+                                <div class="title">${course.name}</div>
+                                <div class="teacher">${shortTeacherText}</div>
+                            </div>
+                        `;
+                    } else {
+                        td.innerHTML = `<span class="empty-slot">- Libre -</span>`;
+                    }
+
+                    tr.appendChild(td);
+                });
+
+                tbody.appendChild(tr);
+            }
+        }
+
+        function openModal(courseKey) {
+            const course = coursesData[courseKey];
+            if (!course) return;
+
+            const isMorning = schedules[currentGroup].isMorning;
+            const classroomName = isMorning ? "Aula 105" : "Aula 106";
+            const teachersList = getTeachersArray(course, currentGroup);
+
+            document.getElementById("modalCourseTitle").textContent = course.name;
+            document.getElementById("modalClassroom").textContent = classroomName;
+            document.getElementById("modalSec").textContent = course.sec;
+            document.getElementById("modalType").textContent = course.type;
+            document.getElementById("modalProg").textContent = course.prog;
+            document.getElementById("modalCredits").textContent = course.credits;
+            document.getElementById("modalHours").textContent = course.hours;
+
+            // Renderizar la lista de profesores en el Modal
+            const modalTeacherContainer = document.getElementById("modalTeacher");
+            const modalTeacherHeader = document.getElementById("modalTeacherHeader");
+
+            if (teachersList.length > 1) {
+                modalTeacherHeader.textContent = "DOCENTES ENCARGADOS:";
+                let listHtml = `<ul class="teacher-list">`;
+                teachersList.forEach(t => {
+                    listHtml += `<li>${t}</li>`;
+                });
+                listHtml += `</ul>`;
+                modalTeacherContainer.innerHTML = listHtml;
+            } else {
+                modalTeacherHeader.textContent = "DOCENTE ENCARGADO:";
+                modalTeacherContainer.textContent = teachersList[0];
+            }
+
+            const modal = document.getElementById("courseModal");
+            modal.classList.remove("closing");
+            modal.classList.add("active");
+        }
+
+        function closeModal() {
+            const modal = document.getElementById("courseModal");
+            if (!modal.classList.contains("active")) return;
+
+            modal.classList.remove("active");
+            modal.classList.add("closing");
+
+            setTimeout(() => {
+                modal.classList.remove("closing");
+            }, 250);
+        }
+
+        function closeModalOnOuterClick(event) {
+            if (event.target.id === "courseModal") {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador y Combinador de Horarios - Arquitectura</title>
+    <!-- Librería html2canvas para la descarga del horario en imagen -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #0B132B;
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        /* Botón de Regresar */
+        .btn-back {
+            max-width: 1400px;
+            margin: 0 auto 20px auto;
+        }
+
+        .btn-back a {
+            color: #5BC0BE;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .btn-back a:hover {
+            color: #70e4e1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: #5BC0BE;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #b3b3cc;
+            font-size: 1.05rem;
+        }
+
+        /* Layout Principal: Panel + Horario */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 992px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Panel de Configuración */
+        .panel {
+            background: #1C2541;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #3a506b;
+            height: fit-content;
+        }
+
+        .panel h2 {
+            font-size: 1.25rem;
+            color: #5BC0BE;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3a506b;
+            padding-bottom: 8px;
+        }
+
+        /* Opciones Globales */
+        .global-options {
+            background: #0B132B;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #3a506b;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            color: #d0d0e6;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #5BC0BE;
+            cursor: pointer;
+        }
+
+        /* Tarjetas de Selección de Cursos */
+        .course-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .course-card {
+            background: #253259;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 5px solid #5BC0BE;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .course-card label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .course-card select {
+            background: #0B132B;
+            color: #ffffff;
+            border: 1px solid #3a506b;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .course-card select:focus {
+            border-color: #5BC0BE;
+        }
+
+        /* Botón Descargar */
+        .btn-download {
+            width: 100%;
+            background: #5BC0BE;
+            color: #0B132B;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download:hover {
+            background: #70e4e1;
+            box-shadow: 0 4px 12px rgba(91, 192, 190, 0.4);
+        }
+
+        /* Banner de Alerta de Cruce */
+        .conflict-alert {
+            display: none;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+        }
+
+        /* Área de Visualización e Impresión/Descarga */
+        .schedule-area {
+            background: #1C2541;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #3a506b;
+            overflow-x: auto;
+        }
+
+        .schedule-capture-zone {
+            background: #1C2541;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .schedule-title-display {
+            font-size: 1.3rem;
+            color: #5BC0BE;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Tablas e Intersecciones Estéticas Sincronizadas */
+        .timetable {
+            width: 100%;
+            table-layout: fixed; /* Distribución simétrica exacta en el eje X */
+            border-collapse: collapse;
+            min-width: 700px;
+            border: 2px solid #3a506b;
+        }
+
+        .timetable th, .timetable td {
+            border: 2px solid #3a506b;
+            text-align: center;
+            padding: 6px 4px;
+            vertical-align: middle;
+            height: 50px;
+            word-wrap: break-word;
+        }
+
+        .timetable th {
+            background: #0B132B;
+            color: #5BC0BE;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 18%; /* Ancho idéntico para todos los días */
+        }
+
+        .timetable th.time-header {
+            width: 110px; /* Ancho fijo reservado a las horas */
+        }
+
+        .timetable td.time-col {
+            background: #0B132B;
+            color: #a0a0c0;
+            font-weight: bold;
+            font-size: 0.8rem;
+            width: 110px;
+            white-space: nowrap;
+        }
+
+        /* Estilos del Bloque de Clase */
+        .slot-class {
+            border-radius: 6px;
+            padding: 6px 4px;
+            color: #ffffff;
+            font-size: 0.82rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slot-class .subject-name {
+            font-weight: bold;
+            margin-bottom: 2px;
+            display: block;
+            line-height: 1.1;
+        }
+
+        .slot-class .docents-list {
+            font-size: 0.72rem;
+            opacity: 0.92;
+            margin-top: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            line-height: 1.1;
+            font-style: italic;
+        }
+
+        .slot-conflict {
+            background: #991b1b !important;
+            border: 1px solid #ef4444;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .slot-empty {
+            color: #3a506b;
+            font-size: 0.85rem;
+        }
+
+        .empty-schedule-msg {
+            text-align: center;
+            color: #7a7a9a;
+            padding: 30px;
+            font-style: italic;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #7a7a9a;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="btn-back">
+        <a href="principal.html">← Volver al Portal Principal</a>
+    </div>
+
+    <header>
+        <h1>Combinador de Horarios</h1>
+        <p>Selecciona la sección ideal para cada curso, personaliza la vista y descarga tu horario listo.</p>
+    </header>
+
+    <div class="main-container">
+
+        <!-- PANEL DE CONFIGURACIÓN Y CONTROLES -->
+        <div class="panel">
+            <h2>Personalizar Asignaturas</h2>
+
+            <div class="global-options">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="showSectionCheck" checked onchange="updateSchedule()">
+                    <span>Mostrar sección (ej: A)</span>
+                </label>
+                <label class="checkbox-container">
+                    <input type="checkbox" id="showTeachersCheck" checked onchange="updateSchedule()">
+                    <span>Mostrar docente(s) asignado(s)</span>
+                </label>
+            </div>
+
+            <!-- Banner de error por choque de horario -->
+            <div id="conflictAlert" class="conflict-alert">
+                ⚠️ <strong>¡Cruce detectado!</strong> Tienes dos o más asignaturas asignadas exactamente al mismo día y hora. Ajusta los grupos.
+            </div>
+
+            <div class="course-selector" id="courseSelectorContainer">
+                <!-- Se genera dinámicamente -->
+            </div>
+
+            <button class="btn-download" onclick="downloadSchedule()">
+                📥 Descargar Horario (PNG)
+            </button>
+        </div>
+
+        <!-- VISTA PREVIA Y GRILLA DEL HORARIO -->
+        <div class="schedule-area">
+            <div id="captureArea" class="schedule-capture-zone">
+                <div class="schedule-title-display">Horario Semanal Personalizado</div>
+
+                <table class="timetable">
+                    <thead>
+                        <tr>
+                            <th class="time-header">Hora</th>
+                            <th>Lunes</th>
+                            <th>Martes</th>
+                            <th>Miércoles</th>
+                            <th>Jueves</th>
+                            <th>Viernes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timetableBody">
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        Sistema de Combinación y Personalización de Horarios Académicos
+    </footer>
+
+    <script>
+        // Bloques de horario adaptados a las franjas de la facultad
+        const timeSlots = [
+            "07:00 - 08:40",
+            "08:50 - 09:40",
+            "09:40 - 12:20",
+            "12:20 - 13:10",
+            "14:00 - 15:40",
+            "15:50 - 16:40",
+            "16:40 - 20:10"
+        ];
+
+        // Paleta de colores por asignatura
+        const courseColors = {
+            "Taller de Diseño Arquitectónico 2": "#31184c",
+            "Representación Arquitectónica 2": "#29612d",
+            "Teoría e Historia de la Arquitectura 1": "#6d212b",
+            "Geometría Descriptiva": "#153657",
+            "Realidad Nacional": "#422b16",
+            "Lingüística, Comprensión y Redacción Académica": "#9f4514"
+        };
+
+        // Cursos, secciones, horarios y lista de docentes asignados por grupo
+        const coursesData = [
+            {
+                id: "taller2",
+                name: "Taller de Diseño Arquitectónico 2",
+                sections: {
+                    "A": {
+                        teachers: ["Arq. Carlos Mendoza", "Arq. Sofía Vargas"],
+                        blocks: [
+                            { day: "Mon", time: "08:50 - 09:40" }, { day: "Mon", time: "09:40 - 12:20" }, { day: "Mon", time: "12:20 - 13:10" },
+                            { day: "Thu", time: "08:50 - 09:40" }, { day: "Thu", time: "09:40 - 12:20" }, { day: "Thu", time: "12:20 - 13:10" }
+                        ]
+                    },
+                    "B": {
+                        teachers: ["Arq. Fernando Ramos"],
+                        blocks: [
+                            { day: "Mon", time: "15:50 - 16:40" }, { day: "Mon", time: "16:40 - 20:10" },
+                            { day: "Thu", time: "15:50 - 16:40" }, { day: "Thu", time: "16:40 - 20:10" }
+                        ]
+                    },
+                    "C": {
+                        teachers: ["Arq. Lucía Fernández"],
+                        blocks: [
+                            { day: "Mon", time: "08:50 - 09:40" }, { day: "Mon", time: "09:40 - 12:20" }, { day: "Mon", time: "12:20 - 13:10" },
+                            { day: "Thu", time: "08:50 - 09:40" }, { day: "Thu", time: "09:40 - 12:20" }, { day: "Thu", time: "12:20 - 13:10" }
+                        ]
+                    },
+                    "D": {
+                        teachers: ["Arq. Andrés Castro", "Arq. Valeria Ríos"],
+                        blocks: [
+                            { day: "Mon", time: "15:50 - 16:40" }, { day: "Mon", time: "16:40 - 20:10" },
+                            { day: "Thu", time: "15:50 - 16:40" }, { day: "Thu", time: "16:40 - 20:10" }
+                        ]
+                    }
+                }
+            },
+            {
+                id: "realidad",
+                name: "Realidad Nacional",
+                sections: {
+                    "A": {
+                        teachers: ["Dr. Roberto Gómez"],
+                        blocks: [{ day: "Tue", time: "07:00 - 08:40" }, { day: "Tue", time: "08:50 - 09:40" }]
+                    },
+                    "B": {
+                        teachers: ["Lic. Elena Morales"],
+                        blocks: [{ day: "Tue", time: "14:00 - 15:40" }, { day: "Tue", time: "15:50 - 16:40" }]
+                    },
+                    "C": {
+                        teachers: ["Dr. Roberto Gómez"],
+                        blocks: [{ day: "Tue", time: "07:00 - 08:40" }, { day: "Tue", time: "08:50 - 09:40" }]
+                    },
+                    "D": {
+                        teachers: ["Lic. Elena Morales"],
+                        blocks: [{ day: "Tue", time: "14:00 - 15:40" }, { day: "Tue", time: "15:50 - 16:40" }]
+                    }
+                }
+            },
+            {
+                id: "historia1",
+                name: "Teoría e Historia de la Arquitectura 1",
+                sections: {
+                    "A": {
+                        teachers: ["Mgt. Gabriel Paredes"],
+                        blocks: [{ day: "Tue", time: "09:40 - 12:20" }, { day: "Tue", time: "12:20 - 13:10" }]
+                    },
+                    "B": {
+                        teachers: ["Arq. Patricia Solís"],
+                        blocks: [{ day: "Tue", time: "16:40 - 20:10" }]
+                    },
+                    "C": {
+                        teachers: ["Mgt. Gabriel Paredes"],
+                        blocks: [{ day: "Tue", time: "09:40 - 12:20" }, { day: "Tue", time: "12:20 - 13:10" }]
+                    },
+                    "D": {
+                        teachers: ["Arq. Patricia Solís"],
+                        blocks: [{ day: "Tue", time: "16:40 - 20:10" }]
+                    }
+                }
+            },
+            {
+                id: "linguistica",
+                name: "Lingüística, Comprensión y Redacción Académica",
+                sections: {
+                    "A": {
+                        teachers: ["Dra. Carmen Salazar"],
+                        blocks: [
+                            { day: "Wed", time: "07:00 - 08:40" },
+                            { day: "Fri", time: "07:00 - 08:40" }, { day: "Fri", time: "08:50 - 09:40" }
+                        ]
+                    },
+                    "B": {
+                        teachers: ["Lic. Javier Ortiz"],
+                        blocks: [
+                            { day: "Wed", time: "14:00 - 15:40" }, { day: "Wed", time: "15:50 - 16:40" },
+                            { day: "Fri", time: "14:00 - 15:40" }
+                        ]
+                    },
+                    "C": {
+                        teachers: ["Dra. Carmen Salazar"],
+                        blocks: [
+                            { day: "Wed", time: "07:00 - 08:40" },
+                            { day: "Fri", time: "07:00 - 08:40" }, { day: "Fri", time: "08:50 - 09:40" }
+                        ]
+                    },
+                    "D": {
+                        teachers: ["Lic. Javier Ortiz"],
+                        blocks: [
+                            { day: "Wed", time: "14:00 - 15:40" }, { day: "Wed", time: "15:50 - 16:40" },
+                            { day: "Fri", time: "14:00 - 15:40" }
+                        ]
+                    }
+                }
+            },
+            {
+                id: "representacion2",
+                name: "Representación Arquitectónica 2",
+                sections: {
+                    "A": {
+                        teachers: ["Arq. Marco Torres", "Arq. Daniela Ruiz"],
+                        blocks: [{ day: "Wed", time: "08:50 - 09:40" }, { day: "Wed", time: "09:40 - 12:20" }]
+                    },
+                    "B": {
+                        teachers: ["Arq. Hugo Benítez"],
+                        blocks: [{ day: "Wed", time: "16:40 - 20:10" }]
+                    },
+                    "C": {
+                        teachers: ["Arq. Marco Torres"],
+                        blocks: [{ day: "Wed", time: "08:50 - 09:40" }, { day: "Wed", time: "09:40 - 12:20" }]
+                    },
+                    "D": {
+                        teachers: ["Arq. Hugo Benítez"],
+                        blocks: [{ day: "Wed", time: "16:40 - 20:10" }]
+                    }
+                }
+            },
+            {
+                id: "geometria",
+                name: "Geometría Descriptiva",
+                sections: {
+                    "A": {
+                        teachers: ["Ing. Alberto Medina"],
+                        blocks: [{ day: "Fri", time: "09:40 - 12:20" }, { day: "Fri", time: "12:20 - 13:10" }]
+                    },
+                    "B": {
+                        teachers: ["Ing. Claudia Navarro"],
+                        blocks: [{ day: "Fri", time: "15:50 - 16:40" }, { day: "Fri", time: "16:40 - 20:10" }]
+                    },
+                    "C": {
+                        teachers: ["Ing. Alberto Medina"],
+                        blocks: [{ day: "Fri", time: "09:40 - 12:20" }, { day: "Fri", time: "12:20 - 13:10" }]
+                    },
+                    "D": {
+                        teachers: ["Ing. Claudia Navarro"],
+                        blocks: [{ day: "Fri", time: "15:50 - 16:40" }, { day: "Fri", time: "16:40 - 20:10" }]
+                    }
+                }
+            }
+        ];
+
+        // Selecciones iniciales predeterminadas en "none" para que aparezca vacío al entrar
+        const userSelections = {
+            taller2: "none",
+            realidad: "none",
+            historia1: "none",
+            linguistica: "none",
+            representacion2: "none",
+            geometria: "none"
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            renderControls();
+            updateSchedule();
+        });
+
+        // Genera los menús de selección lateral
+        function renderControls() {
+            const container = document.getElementById("courseSelectorContainer");
+            container.innerHTML = "";
+
+            coursesData.forEach(course => {
+                const card = document.createElement("div");
+                card.className = "course-card";
+                card.style.borderLeftColor = courseColors[course.name] || "#5BC0BE";
+
+                card.innerHTML = `
+                    <label for="select-${course.id}">${course.name}</label>
+                    <select id="select-${course.id}" onchange="onSectionChange('${course.id}', this.value)">
+                        <option value="none" ${userSelections[course.id] === 'none' ? 'selected' : ''}>-- Sin asignar / Ninguno --</option>
+                        ${Object.keys(course.sections).map(secKey => {
+                            return `<option value="${secKey}" ${userSelections[course.id] === secKey ? 'selected' : ''}>
+                                Grupo ${secKey}
+                            </option>`;
+                        }).join('')}
+                    </select>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function onSectionChange(courseId, newSection) {
+            userSelections[courseId] = newSection;
+            updateSchedule();
+        }
+
+        // Procesa y renderiza la tabla de horarios recortando filas no utilizadas
+        function updateSchedule() {
+            const tbody = document.getElementById("timetableBody");
+            const showSectionName = document.getElementById("showSectionCheck").checked;
+            const showTeachers = document.getElementById("showTeachersCheck").checked;
+            const alertBox = document.getElementById("conflictAlert");
+            tbody.innerHTML = "";
+
+            const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+            const grid = {};
+
+            timeSlots.forEach(slot => {
+                grid[slot] = {};
+                days.forEach(day => {
+                    grid[slot][day] = [];
+                });
+            });
+
+            // Llenar grilla con las elecciones actuales
+            coursesData.forEach(course => {
+                const selectedSectionKey = userSelections[course.id];
+                
+                if (selectedSectionKey !== "none") {
+                    const sectionData = course.sections[selectedSectionKey];
+
+                    if (sectionData && sectionData.blocks) {
+                        sectionData.blocks.forEach(block => {
+                            if (grid[block.time] && grid[block.time][block.day]) {
+                                grid[block.time][block.day].push({
+                                    courseName: course.name,
+                                    sectionKey: selectedSectionKey,
+                                    teachers: sectionData.teachers || [],
+                                    color: courseColors[course.name] || "#253259"
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+
+            // Determinar qué franjas horarias contienen al menos una clase asignada
+            const usedSlots = timeSlots.filter(slot => {
+                return days.some(day => grid[slot][day].length > 0);
+            });
+
+            // Si no hay cursos seleccionados, muestra un mensaje informativo
+            if (usedSlots.length === 0) {
+                alertBox.style.display = "none";
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-schedule-msg">
+                            No hay ningún curso seleccionado. Selecciona un grupo en el panel lateral para armar tu horario.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let hasConflict = false;
+
+            // Matriz de seguimiento para celdas omitidas por el rowspan
+            const skipCell = {};
+            usedSlots.forEach((_, tIdx) => {
+                skipCell[tIdx] = {};
+                days.forEach(day => {
+                    skipCell[tIdx][day] = false;
+                });
+            });
+
+            usedSlots.forEach((slot, tIdx) => {
+                const tr = document.createElement("tr");
+
+                // Celda de hora
+                const tdTime = document.createElement("td");
+                tdTime.className = "time-col";
+                tdTime.textContent = slot;
+                tr.appendChild(tdTime);
+
+                // Celdas para cada día de la semana
+                days.forEach(day => {
+                    if (skipCell[tIdx][day]) return;
+
+                    const items = grid[slot][day];
+                    const td = document.createElement("td");
+
+                    if (items.length === 1) {
+                        const item = items[0];
+                        let rowspan = 1;
+
+                        // Calcular combinaciones consecutivas únicamente dentro de las franjas visibles
+                        for (let nextIdx = tIdx + 1; nextIdx < usedSlots.length; nextIdx++) {
+                            const nextSlot = usedSlots[nextIdx];
+                            const nextItems = grid[nextSlot][day];
+
+                            if (
+                                nextItems.length === 1 &&
+                                nextItems[0].courseName === item.courseName &&
+                                nextItems[0].sectionKey === item.sectionKey
+                            ) {
+                                rowspan++;
+                            } else {
+                                break;
+                            }
+                        }
+
+                        // Marcar filas siguientes para ser ignoradas
+                        for (let r = 1; r < rowspan; r++) {
+                            skipCell[tIdx + r][day] = true;
+                        }
+
+                        if (rowspan > 1) {
+                            td.rowSpan = rowspan;
+                        }
+
+                        const displayName = showSectionName 
+                            ? `${item.courseName} (${item.sectionKey})` 
+                            : item.courseName;
+
+                        let docentsHtml = "";
+                        if (showTeachers && item.teachers.length > 0) {
+                            docentsHtml = `
+                                <div class="docents-list">
+                                    ${item.teachers.map(teacher => `<span>👤 ${teacher}</span>`).join('')}
+                                </div>
+                            `;
+                        }
+
+                        td.innerHTML = `
+                            <div class="slot-class" style="background-color: ${item.color}">
+                                <span class="subject-name">${displayName}</span>
+                                ${docentsHtml}
+                            </div>
+                        `;
+                    } else if (items.length > 1) {
+                        hasConflict = true;
+                        const names = items.map(i => showSectionName ? `${i.courseName} (${i.sectionKey})` : i.courseName).join(" + ");
+                        td.innerHTML = `
+                            <div class="slot-class slot-conflict">
+                                <span class="subject-name"> CRUCE: ${names}</span>
+                            </div>
+                        `;
+                    } else {
+                        td.innerHTML = `<span class="slot-empty">-</span>`;
+                    }
+
+                    tr.appendChild(td);
+                });
+
+                tbody.appendChild(tr);
+            });
+
+            // Alerta visual de cruce de horario
+            alertBox.style.display = hasConflict ? "block" : "none";
+        }
+
+        // Descarga de imagen mediante html2canvas
+        function downloadSchedule() {
+            const captureArea = document.getElementById("captureArea");
+            
+            html2canvas(captureArea, {
+                backgroundColor: "#1C2541",
+                scale: 2
+            }).then(canvas => {
+                const link = document.createElement("a");
+                link.download = "mi_horario_personalizado.png";
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
