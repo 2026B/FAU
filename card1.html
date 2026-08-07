@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -465,7 +464,7 @@
 
     <header>
         <h1>Información de Cursos</h1>
-        <p>Visualiza el mapa de horarios interactivo y datos de la promoción de Arquitectura</p>
+        <p>Visualiza el horarios y datos de los cursos</p>
     </header>
 
     <!-- Pestañas para Selección de Horarios -->
@@ -552,7 +551,7 @@
     </div>
 
     <footer>
-        Promoción de Arquitectura
+        :D
     </footer>
 
     <!-- Ventana Modal de Detalles del Curso -->
@@ -609,8 +608,8 @@
                 credits: "6",
                 hours: "2 Teóricas + 8 Prácticas",
                 teachers: {
-                    "A": ["Arq. Neyra", "Arq. Valdez"],
-                    "B": ["Arq. Pérez"],
+                    "A": ["Arq. Neyra", "Arq. chacon"],
+                    "B": ["Arq. "],
                     "C": [],
                     "D": []
                 }
@@ -766,9 +765,9 @@
         // Formatea la visualización en la casilla pequeña del horario
         function formatTeachersShort(teachersList) {
             if (teachersList.length === 1) {
-                return `👨‍🏫 ${teachersList[0]}`;
+                return ` ${teachersList[0]}`;
             }
-            return `👨‍🏫 ${teachersList[0]} (+${teachersList.length - 1})`;
+            return ` ${teachersList[0]} (+${teachersList.length - 1})`;
         }
 
         function renderTimetable(group) {
