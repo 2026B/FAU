@@ -124,6 +124,7 @@
             border: 1px solid #3a506b;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             overflow-x: auto;
+            overflow-y: hidden; /* Elimina la barra de desplazamiento vertical */
         }
 
         .timetable-header-info {
@@ -165,11 +166,10 @@
             border-collapse: collapse;
             min-width: 750px;
             table-layout: fixed;
-            height: 100%;
         }
 
         .timetable tr {
-            height: 55px;
+            height: 48px; /* Ajustado para calzar exactamente sin desbordar */
         }
 
         .timetable th, .timetable td {
@@ -177,7 +177,7 @@
             text-align: center;
             padding: 0;
             vertical-align: middle;
-            height: 55px;
+            height: 48px;
             overflow: hidden;
             word-wrap: break-word;
         }
@@ -188,7 +188,7 @@
             font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            padding: 12px 4px;
+            padding: 10px 4px;
             height: auto;
         }
 
@@ -198,14 +198,14 @@
             font-weight: 600;
             font-size: 0.8rem;
             white-space: nowrap;
-            padding: 8px 4px;
+            padding: 6px 4px;
         }
 
         /* Tarjeta del Curso en la Grilla */
         .course-slot {
             background: #111b38;
             border-radius: 4px;
-            padding: 8px 6px;
+            padding: 6px 6px;
             color: #ffffff;
             cursor: pointer;
             transition: background 0.2s ease, transform 0.2s ease;
@@ -226,16 +226,16 @@
         }
 
         .course-slot .title {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 600;
             line-height: 1.2;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             color: #e0e0e0;
             word-break: break-word;
         }
 
         .course-slot .teacher {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             color: #8a9bbd;
             white-space: nowrap;
             overflow: hidden;
@@ -247,7 +247,7 @@
             font-size: 0.8rem;
             font-style: italic;
             display: block;
-            padding: 8px;
+            padding: 6px;
         }
 
         /* Modal de Información del Curso */
