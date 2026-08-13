@@ -326,8 +326,8 @@
     </div>
 
     <header>
-        <h1>Creación y visualización de horarios</h1>
-        <p>Selecciona los horarios ideal para cada curso, personaliza la vista y descarga tu horario listo.</p>
+        <h1>Combinador de Horarios</h1>
+        <p>Selecciona la sección ideal para cada curso, personaliza la vista y descarga tu horario listo.</p>
     </header>
 
     <div class="main-container">
@@ -342,7 +342,7 @@
                     <span>Mostrar sección (ej: A)</span>
                 </label>
                 <label class="checkbox-container">
-                    <input type="checkbox" id="showTeachersCheck" checked onchange="updateSchedule()">
+                    <input type="checkbox" id="showTeachersCheck" onchange="updateSchedule()">
                     <span>Mostrar docente(s) asignado(s)</span>
                 </label>
             </div>
@@ -387,7 +387,7 @@
     </div>
 
     <footer>
-        :D
+        Sistema de Combinación y Personalización de Horarios Académicos
     </footer>
 
     <script>
@@ -399,7 +399,8 @@
             "12:20 - 13:10",
             "14:00 - 15:40",
             "15:50 - 16:40",
-            "16:40 - 20:10"
+            "16:40 - 19:20",
+            "19:20 - 20:10"
         ];
 
         // Paleta de colores por asignatura
@@ -419,31 +420,31 @@
                 name: "Taller de Diseño Arquitectónico 2",
                 sections: {
                     "A": {
-                        teachers: ["Arq. neyra", "Arq. chacon"],
+                        teachers: ["ARQ. YON NEIRA ARENAS", "ARQ. ADOLDO CHACON CORNEJO", "ARQ. RENZO BARREDA CUADROS"],
                         blocks: [
                             { day: "Mon", time: "08:50 - 09:40" }, { day: "Mon", time: "09:40 - 12:20" }, { day: "Mon", time: "12:20 - 13:10" },
                             { day: "Thu", time: "08:50 - 09:40" }, { day: "Thu", time: "09:40 - 12:20" }, { day: "Thu", time: "12:20 - 13:10" }
                         ]
                     },
                     "B": {
-                        teachers: ["Sin asignar"],
+                        teachers: ["ARQ. MARIELA DUEÑAS SILVA", "ARQ. VERONICA GUZMAN MONJE", "ARQ. GIANNINA AQUINO QUINO"],
                         blocks: [
-                            { day: "Mon", time: "15:50 - 16:40" }, { day: "Mon", time: "16:40 - 20:10" },
-                            { day: "Thu", time: "15:50 - 16:40" }, { day: "Thu", time: "16:40 - 20:10" }
+                            { day: "Mon", time: "15:50 - 16:40" }, { day: "Mon", time: "16:40 - 19:20" }, { day: "Mon", time: "19:20 - 20:10" },
+                            { day: "Thu", time: "15:50 - 16:40" }, { day: "Thu", time: "16:40 - 19:20" }, { day: "Thu", time: "19:20 - 20:10" }
                         ]
                     },
                     "C": {
-                        teachers: ["Sin asignar"],
+                        teachers: ["ARQ. MARIZELA ALPACA CHAVEZ", "ARQ. ROSARIO HERRERA TORRES", "ARQ. DANIEL EYZAGUIRRE MACEDO"],
                         blocks: [
                             { day: "Mon", time: "08:50 - 09:40" }, { day: "Mon", time: "09:40 - 12:20" }, { day: "Mon", time: "12:20 - 13:10" },
                             { day: "Thu", time: "08:50 - 09:40" }, { day: "Thu", time: "09:40 - 12:20" }, { day: "Thu", time: "12:20 - 13:10" }
                         ]
                     },
                     "D": {
-                        teachers: ["Sin asignar"],
+                        teachers: ["ARQ. RICARDO CRUZ CUENTAS", "ARQ. NOELIA LOPEZ ORTEGA", "ARQ. ALLISON VELASQUEZ RIOS"],
                         blocks: [
-                            { day: "Mon", time: "15:50 - 16:40" }, { day: "Mon", time: "16:40 - 20:10" },
-                            { day: "Thu", time: "15:50 - 16:40" }, { day: "Thu", time: "16:40 - 20:10" }
+                            { day: "Mon", time: "15:50 - 16:40" }, { day: "Mon", time: "16:40 - 19:20" }, { day: "Mon", time: "19:20 - 20:10" },
+                            { day: "Thu", time: "15:50 - 16:40" }, { day: "Thu", time: "16:40 - 19:20" }, { day: "Thu", time: "19:20 - 20:10" }
                         ]
                     }
                 }
@@ -475,20 +476,20 @@
                 name: "Teoría e Historia de la Arquitectura 1",
                 sections: {
                     "A": {
-                        teachers: ["Sin asignar"],
+                        teachers: ["ARQ. GONZALO ESPINOZA DE LA BORDA"],
                         blocks: [{ day: "Tue", time: "09:40 - 12:20" }, { day: "Tue", time: "12:20 - 13:10" }]
                     },
                     "B": {
-                        teachers: ["Sin asignar"],
-                        blocks: [{ day: "Tue", time: "16:40 - 20:10" }]
+                        teachers: ["ARQ. EDITH SUAREZ MALAGA"],
+                        blocks: [{ day: "Tue", time: "16:40 - 19:20" }, { day: "Tue", time: "19:20 - 20:10" }]
                     },
                     "C": {
-                        teachers: ["Sin asignar"],
+                        teachers: ["ARQ. MARIZELA ALPACA CHAVEZ"],
                         blocks: [{ day: "Tue", time: "09:40 - 12:20" }, { day: "Tue", time: "12:20 - 13:10" }]
                     },
                     "D": {
-                        teachers: ["Sin asignar"],
-                        blocks: [{ day: "Tue", time: "16:40 - 20:10" }]
+                        teachers: ["ARQ. DANIEL EYZAGUIRRE MACEDO"],
+                        blocks: [{ day: "Tue", time: "16:40 - 19:20" }, { day: "Tue", time: "19:20 - 20:10" }]
                     }
                 }
             },
@@ -497,7 +498,7 @@
                 name: "Lingüística, Comprensión y Redacción Académica",
                 sections: {
                     "A": {
-                        teachers: ["Sin asignar"],
+                        teachers: ["DR. RAUL ARREDONDO GAMIS"],
                         blocks: [
                             { day: "Wed", time: "07:00 - 08:40" },
                             { day: "Fri", time: "07:00 - 08:40" }, { day: "Fri", time: "08:50 - 09:40" }
@@ -531,20 +532,20 @@
                 name: "Representación Arquitectónica 2",
                 sections: {
                     "A": {
-                        teachers: ["Sin asignar"],
+                        teachers: ["ARQ. JORGE URQUIZO ANGULO", "ARQ. GABRIELA ARDILES BOLAÑOS"],
                         blocks: [{ day: "Wed", time: "08:50 - 09:40" }, { day: "Wed", time: "09:40 - 12:20" }]
                     },
                     "B": {
-                        teachers: ["Sin asignar"],
-                        blocks: [{ day: "Wed", time: "16:40 - 20:10" }]
+                        teachers: ["ARQ. EDUARDO BENAVIDES ROJAS", "ARQ. FREDDY TORRES LIMA"],
+                        blocks: [{ day: "Wed", time: "16:40 - 19:20" }, { day: "Wed", time: "19:20 - 20:10" }]
                     },
                     "C": {
-                        teachers: ["Sin asignar"],
+                        teachers: ["ARQ. SUSANNE ORDEGOZO TEJADA", "ARQ. KARINA BASURCO CAYLLAHUA"],
                         blocks: [{ day: "Wed", time: "08:50 - 09:40" }, { day: "Wed", time: "09:40 - 12:20" }]
                     },
                     "D": {
-                        teachers: ["Sin asignar"],
-                        blocks: [{ day: "Wed", time: "16:40 - 20:10" }]
+                        teachers: ["ARQ. ADOLFO CHACON CORNEJO", "ARQ. ALLISON VELASQUEZ RIOS"],
+                        blocks: [{ day: "Wed", time: "16:40 - 19:20" }, { day: "Wed", time: "19:20 - 20:10" }]
                     }
                 }
             },
@@ -553,20 +554,20 @@
                 name: "Geometría Descriptiva",
                 sections: {
                     "A": {
-                        teachers: ["Sin asignar"],
+                        teachers: ["ARQ. JOSE MONTES TRUJILLANO"],
                         blocks: [{ day: "Fri", time: "09:40 - 12:20" }, { day: "Fri", time: "12:20 - 13:10" }]
                     },
                     "B": {
-                        teachers: ["Sin asignar"],
-                        blocks: [{ day: "Fri", time: "15:50 - 16:40" }, { day: "Fri", time: "16:40 - 20:10" }]
+                        teachers: ["ARQ. VERONICA GUZMAN MONJE"],
+                        blocks: [{ day: "Fri", time: "16:40 - 19:20" }, { day: "Fri", time: "19:20 - 20:10" }]
                     },
                     "C": {
-                        teachers: ["Sin asignar"],
+                        teachers: ["ARQ. VERONICA GUZMAN MONJE"],
                         blocks: [{ day: "Fri", time: "09:40 - 12:20" }, { day: "Fri", time: "12:20 - 13:10" }]
                     },
                     "D": {
-                        teachers: ["Sin asignar"],
-                        blocks: [{ day: "Fri", time: "15:50 - 16:40" }, { day: "Fri", time: "16:40 - 20:10" }]
+                        teachers: ["ARQ. RAMIRO PEÑA CHENEAUX"],
+                        blocks: [{ day: "Fri", time: "15:50 - 16:40" }, { day: "Fri", time: "16:40 - 19:20" }]
                     }
                 }
             }
@@ -739,7 +740,7 @@
                         if (showTeachers && item.teachers.length > 0) {
                             docentsHtml = `
                                 <div class="docents-list">
-                                    ${item.teachers.map(teacher => `<span>👤 ${teacher}</span>`).join('')}
+                                    ${item.teachers.map(teacher => `<span> ${teacher}</span>`).join('')}
                                 </div>
                             `;
                         }
