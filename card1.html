@@ -608,10 +608,10 @@
                 credits: "6",
                 hours: "2 Teóricas + 8 Prácticas",
                 teachers: {
-                    "A": ["Arq. Neyra", "Arq. chacon"],
-                    "B": ["Arq. "],
-                    "C": [],
-                    "D": []
+                    "A": ["ARQ. YON NEIRA ARENAS", "ARQ. ADOLDO CHACON CORNEJO", "ARQ. RENZO BARREDA CUADROS"],
+                    "B": ["ARQ. MARIELA DUEÑAS SILVA", "ARQ. VERONICA GUZMAN MONJE", "ARQ. GIANNINA AQUINO QUINO"],
+                    "C": ["ARQ. MARIZELA ALPACA CHAVEZ", "ARQ. ROSARIO HERRERA TORRES", "ARQ. DANIEL EYZAGUIRRE MACEDO"],
+                    "D": ["ARQ. RICARDO CRUZ CUENTAS", "ARQ. NOELIA LOPEZ ORTEGA", "ARQ. ALLISON VELASQUEZ RIOS"]
                 }
             },
             "rep2": {
@@ -623,10 +623,10 @@
                 credits: "2",
                 hours: "0 Teóricas + 4 Prácticas",
                 teachers: {
-                    "A": [],
-                    "B": [],
-                    "C": [],
-                    "D": []
+                    "A": ["ARQ. JORGE URQUIZO ANGULO", "ARQ. GABRIELA ARDILES BOLAÑOS"],
+                    "B": ["ARQ. EDUARDO BENAVIDES ROJAS", "ARQ. FREDDY TORRES LIMA"],
+                    "C": ["ARQ. SUSANNE ORDEGOZO TEJADA", "ARQ. KARINA BASURCO CAYLLAHUA"],
+                    "D": ["ARQ. ADOLFO CHACON CORNEJO", "ARQ. ALLISON VELASQUEZ RIOS"]
                 }
             },
             "teoria1": {
@@ -638,10 +638,10 @@
                 credits: "3",
                 hours: "2 Teóricas + 2 Prácticas",
                 teachers: {
-                    "A": [],
-                    "B": [],
-                    "C": [],
-                    "D": []
+                    "A": ["ARQ. GONZALO ESPINOZA DE LA BORDA"],
+                    "B": ["ARQ. EDITH SUAREZ MALAGA"],
+                    "C": ["ARQ. MARIZELA ALPACA CHAVEZ"],
+                    "D": ["ARQ. DANIEL EYZAGUIRRE MACEDO"]
                 }
             },
             "geom": {
@@ -653,10 +653,10 @@
                 credits: "2",
                 hours: "0 Teóricas + 4 Prácticas",
                 teachers: {
-                    "A": [],
-                    "B": [],
-                    "C": [],
-                    "D": []
+                    "A": ["ARQ. JOSE MONTES TRUJILLANO"],
+                    "B": ["ARQ. VERONICA GUZMAN MONJE"],
+                    "C": ["ARQ. VERONICA GUZMAN MONJE"],
+                    "D": ["ARQ. RAMIRO PEÑA CHENEAUX"]
                 }
             },
             "realidad": {
@@ -683,7 +683,7 @@
                 credits: "3",
                 hours: "1 Teórica + 4 Prácticas",
                 teachers: {
-                    "A": [],
+                    "A": ["DR. RAUL ARREDONDO GAMIS"],
                     "B": [],
                     "C": [],
                     "D": []
@@ -702,8 +702,19 @@
             { time: "12:20 - 13:10", Mon: "taller2",  Tue: "teoria1",  Wed: null,   Thu: "taller2",  Fri: "geom" }
         ];
 
-        // Bloques de Horarios Tarde (Secciones B y D)
-        const afternoonBlocks = [
+// Bloques de Horarios Tarde - Sección B
+const afternoonBlocksB = [
+            { time: "14:00 - 14:50", Mon: null,       Tue: "realidad", Wed: "ling", Thu: null,       Fri: "ling" },
+            { time: "14:50 - 15:40", Mon: null,       Tue: "realidad", Wed: "ling", Thu: null,       Fri: "ling" },
+            { time: "15:50 - 16:40", Mon: "taller2",  Tue: "realidad", Wed: "ling", Thu: "taller2",  Fri: null, },
+            { time: "16:40 - 17:30", Mon: "taller2",  Tue: "teoria1",  Wed: "rep2", Thu: "taller2",  Fri: "geom" },
+            { time: "17:30 - 18:20", Mon: "taller2",  Tue: "teoria1",  Wed: "rep2", Thu: "taller2",  Fri: "geom" },
+            { time: "18:30 - 19:20", Mon: "taller2",  Tue: "teoria1",  Wed: "rep2", Thu: "taller2",  Fri: "geom" },
+            { time: "19:20 - 20:10", Mon: "taller2",  Tue: "teoria1",  Wed: "rep2", Thu: "taller2",  Fri: "geom" }
+];
+
+// Bloques de Horarios Tarde - Sección D
+const afternoonBlocksD = [
             { time: "14:00 - 14:50", Mon: null,       Tue: "realidad", Wed: "ling", Thu: null,       Fri: "ling" },
             { time: "14:50 - 15:40", Mon: null,       Tue: "realidad", Wed: "ling", Thu: null,       Fri: "ling" },
             { time: "15:50 - 16:40", Mon: "taller2",  Tue: "realidad", Wed: "ling", Thu: "taller2",  Fri: "geom" },
@@ -711,8 +722,7 @@
             { time: "17:30 - 18:20", Mon: "taller2",  Tue: "teoria1",  Wed: "rep2", Thu: "taller2",  Fri: "geom" },
             { time: "18:30 - 19:20", Mon: "taller2",  Tue: "teoria1",  Wed: "rep2", Thu: "taller2",  Fri: "geom" },
             { time: "19:20 - 20:10", Mon: "taller2",  Tue: "teoria1",  Wed: "rep2", Thu: "taller2",  Fri: null }
-        ];
-
+];
         // Estructura de Secciones asignadas
         const schedules = {
             "A": {
@@ -723,7 +733,7 @@
             "B": {
                 title: "Horario Sección B (Tarde)",
                 isMorning: false,
-                blocks: afternoonBlocks
+                blocks: afternoonBlocksB
             },
             "C": {
                 title: "Horario Sección C (Mañana)",
@@ -733,7 +743,7 @@
             "D": {
                 title: "Horario Sección D (Tarde)",
                 isMorning: false,
-                blocks: afternoonBlocks
+                blocks: afternoonBlocksD
             }
         };
 
